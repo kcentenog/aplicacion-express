@@ -11,6 +11,24 @@ db.run(`CREATE TABLE IF NOT EXISTS todos (
 
 const app = new Hono()
 
+app.post('/agrega_todo', async (c) => {
+    const body = await c.req.json();
+  const { todo } = body;
+
+  if (!todo) {
+    return c.json({ error: 'El campo "todo" es obligatorio.' }, 400);
+  }
+   try {
+    const insert = db.prepare('INSERT INTO todos (todo) VALUES (?)');
+    const info = insert.run(todo);
+
+    return c.json({mensaje: 'Tarea agregada con éxito', id: info.lastInsertRowid}, 201);
+  } catch (err) {
+    return c.json({ error: 'Error al guardar en la base de datos' }, 500);
+  }
+});
+
+
 app.get('/', (c) => {
     return c.json({ status: 'ok' })
 })
