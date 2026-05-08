@@ -11,6 +11,19 @@ db.run(`CREATE TABLE IF NOT EXISTS todos (
 
 const app = new Hono()
 
+app.get('/obtener_todo', (c)=> {
+    try {
+    const query = db.query("SELECT * FROM todos")
+    const rows = query.all()
+
+    return c.json({
+      data: rows
+    })
+  } catch (error) {
+    return c.json({ success: false, message: error.message }, 500)
+  }
+})
+
 app.post('/agrega_todo', async (c) => {
     const body = await c.req.json();
   const { todo } = body;
