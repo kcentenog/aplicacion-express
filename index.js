@@ -1,5 +1,6 @@
 import { Hono } from 'hono'
 import { Database } from 'bun:sqlite'
+import { cors } from 'hono/cors'
 
 // Abre la base de datos
 const db = new Database('./base.sqlite3')
@@ -10,7 +11,10 @@ db.run(`CREATE TABLE IF NOT EXISTS todos (
 )`)
 
 const app = new Hono()
-
+app.use('/*', cors({
+  origin: '*', // Permite peticiones desde cualquier origen (ideal para desarrollo/móvil)
+  allowMethods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
+}))
 app.get('/obtener_todo', (c)=> {
     try {
     const query = db.query("SELECT * FROM todos")
